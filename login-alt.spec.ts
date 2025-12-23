@@ -1,66 +1,18 @@
 import { test, expect } from '@playwright/test';
-// Import RelicxSDK from local source (CommonJS default export)
-// If using the published package instead, replace the require path with: require('relicxsdk')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-//
-// pre-requisites
-// npx playwright install
-// npm i -D @playwright/test
-// export RELICX_API_KEY='<your-api-key>'
-// export RELICX_API_ENDPOINT='https://ci-ingress-ben-1.relicx.ai'
-// npx playwright test login-alt.spec.ts
-// npx playwright test login-alt.spec.ts -g "opens page and submits credentials \(variant 1\)"
 
-// import RelicxSDK from '../relicxSdk/src/relicxSdk';
+test('has title', async ({ page }) => {
+  await page.goto('https://playwright.dev/');
 
-// const RELICX_API_ENDPOINT = process.env.RELICX_API_ENDPOINT || 'https://app.relicx.ai';
-// const API_KEY = process.env.RELICX_API_KEY || 'API_KEY';
-// const relicx = new RelicxSDK(API_KEY, RELICX_API_ENDPOINT);
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Playwright/);
+});
 
-const URL = 'http://prod.dbank.staging-apps.relicx.ai:8080/bank/login';
+test('get started link', async ({ page }) => {
+  await page.goto('https://playwright.dev/');
 
-// Sample Playwright test suite 2
-// Contains setup/teardown and two tests that open the login page,
-// fill username/password, and click submit
+  // Click the get started link.
+  await page.getByRole('link', { name: 'Get started' }).click();
 
-test.describe('Login flow sample 2', () => {
-  test.beforeEach(async ({}, testInfo) => {
-    console.log(`[BeforeEach] Starting: ${testInfo.title}`);
-  });
-
-  test.afterEach(async ({}, testInfo) => {
-    console.log(`[AfterEach] Finished: ${testInfo.title}`);
-  });
-
-  test('opens page and submits credentials (variant 1)', async ({ page }) => {
-    await page.goto(URL);
-    await page.fill('#username', 'jsmith@demo.io');
-    await page.fill('#password', 'Demo123!');
-    await page.click('#submit');
-
-    // Ask Relicx a question about the current page state
-    // const response = await relicx.answerForPage('Is the user not logged in?', page);
-    // console.log(`Relicx Answer: ${response.answer}`);
-    // console.log(`Explanation: ${response.explanation}`);
-    // console.log(`Confidence: ${response.confidence}`);
-    // console.log(`Request ID: ${response.requestId}`);
-
-    // Optional: verify we stayed on a page and elements are interactable
-  });
-
-  test('opens page and submits credentials (variant 2)', async ({ page }) => {
-    await page.goto(URL);
-    await page.fill('#username', 'jsmith@demo.io');
-    await page.fill('#password', 'Demo123!');
-    await page.click('#submit');
-
-    // Ask Relicx a question about the current page state
-    // const response = await relicx.answerForPage('Is the user not logged in?', page);
-    // console.log(`Relicx Answer: ${response.answer}`);
-    // console.log(`Explanation: ${response.explanation}`);
-    // console.log(`Confidence: ${response.confidence}`);
-    // console.log(`Request ID: ${response.requestId}`);
-
-    // Optional: verify submit button is still visible (soft check)
-  });
+  // Expects page to have a heading with the name of Installation.
+  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
 });
