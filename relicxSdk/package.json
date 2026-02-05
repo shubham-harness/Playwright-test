@@ -1,0 +1,30 @@
+{
+  "name": "relicxsdk",
+  "version": "1.0.8",
+  "description": "Relicx SDK provides natural language apis that can assert application behavior, perform tasks by generating code, extract data from the application state and fake data. It comes with a cypress plugin to make it convenient to use the Relicx API in cypress",
+  "keywords": [
+    "Generative AI",
+    "Assertions",
+    "Copilot",
+    "Faker",
+    "Data extraction",
+    "relicx"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Relicx",
+  "license": "ISC",
+  "homepage": "https://relicx.ai",
+  "devDependencies": {
+    "@babel/core": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
+    "@babel/preset-react": "^7.24.7",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "axios": "^1.12.2"
+  }
+}
