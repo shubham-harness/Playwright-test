@@ -58,8 +58,8 @@ test.describe('TodoMVC App', () => {
     );
 
     // The Relicx SDK answer is the sole basis for test pass/fail
-    expect(response.answer, `Relicx assertion failed: ${response.explanation}`).toBe(true);
-    expect(response.confidence, 'Confidence too low for reliable assertion').toBeGreaterThanOrEqual(7);
+    expect(response.answer, `Relicx assertion passed for: ${response.explanation}`).toBe(true);
+    expect(response.confidence, `Confidence assertion passed: ${response.confidence}`).toBeGreaterThanOrEqual(7);
   });
 
   test('should mark a todo as completed', async ({ page }, testInfo) => {
@@ -98,7 +98,7 @@ test.describe('TodoMVC App', () => {
     );
 
     // The Relicx SDK answer is the sole basis for test pass/fail
-    expect(response.answer, `Relicx assertion failed: ${response.explanation}`).toBe(true);
-    expect(response.confidence, 'Confidence too low for reliable assertion').toBeGreaterThanOrEqual(7);
+    expect(response.answer, `Relicx assertion passed for: ${response.explanation}`).toBe(true);
+    expect(response.confidence, `Confidence assertion passed: ${response.confidence}`).toBeGreaterThanOrEqual(7);
   });
 });

@@ -56,7 +56,7 @@ test.describe('User Authentication', () => {
 
     // The Relicx SDK answer is the sole basis for test pass/fail
     // Test passes if answer is true (user is logged in) with sufficient confidence
-    expect(response.answer, `Relicx assertion failed: ${response.explanation}`).toBe(true);
-    expect(response.confidence, 'Confidence too low for reliable assertion').toBeGreaterThanOrEqual(7);
+    expect(response.answer, `Relicx assertion passed for: ${response.explanation}`).toBe(true);
+    expect(response.confidence, `Confidence assertion passed: ${response.confidence}`).toBeGreaterThanOrEqual(7);
   });
 });
