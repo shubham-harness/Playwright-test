@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 // Import RelicxSDK from local source (CommonJS default export)
 // If using the published package instead, replace the require path with: require('relicxsdk')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 //
 // pre-requisites
 // npx playwright install
@@ -10,10 +9,8 @@ import { test, expect } from '@playwright/test';
 // export RELICX_API_KEY='<your-api-key>'
 // export RELICX_API_ENDPOINT='https://ci-ingress-ben-1.relicx.ai'
 // npx playwright test ai.spec.ts
-// npx playwright test ai.spec.ts -g "should successfully log in"
 
 import RelicxSDK from './relicxSdk/src/relicxSdk';
-// const { RelicxSDK } = require('relicxsdk');
 
 const RELICX_API_ENDPOINT = process.env.RELICX_API_ENDPOINT || 'https://app.relicx.ai';
 const API_KEY = process.env.RELICX_API_KEY || 'API_KEY';
