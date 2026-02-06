@@ -55,45 +55,58 @@ class RelicxSDK {
  * Use this to get answers for both Playwright and Puppeteer
  * @param {*} question : natural language question about the page
  * @param {*} page : page object from either Playwright or Puppeteer
+ * @param {Object} options : optional configuration
+ * @param {Object} options.test : Playwright test object for step grouping
+ * @param {string} options.stepName : Custom step name (default: 'Harness AI Step')
  * @return {answer: boolean, explanation: string} : Answer with explanation
  */
-async answerForPage(question, page) {
-  // Take a screenshot
-  let screenshotBase64;
-  if (typeof page.screenshot === 'function') {
-    const screenshotBuffer = await page.screenshot({ encoding: 'base64' });
-    if (Buffer.isBuffer(screenshotBuffer)) {
-      screenshotBase64 = screenshotBuffer.toString('base64');
+async answerForPage(question, page, options = {}) {
+  const { test: testObject, stepName = 'Harness AI Step' } = options;
+  
+  const executeQuery = async () => {
+    // Take a screenshot
+    let screenshotBase64;
+    if (typeof page.screenshot === 'function') {
+      const screenshotBuffer = await page.screenshot({ encoding: 'base64' });
+      if (Buffer.isBuffer(screenshotBuffer)) {
+        screenshotBase64 = screenshotBuffer.toString('base64');
+      } else {
+        screenshotBase64 = screenshotBuffer; // For Puppeteer, it might already be a base64 string
+      }
     } else {
-      screenshotBase64 = screenshotBuffer; // For Puppeteer, it might already be a base64 string
+      throw new Error("The provided page object does not support the screenshot function.");
     }
-  } else {
-    throw new Error("The provided page object does not support the screenshot function.");
-  }
 
-  // Get the page URL
-  let pageUrl;
-  if (typeof page.url === 'function') {
-    pageUrl = page.url();
-  } else if (typeof page.evaluate === 'function') {
-    pageUrl = await page.evaluate(() => window.location.href);
-  } else {
-    throw new Error("The provided page object does not support the url function.");
-  }
-
-  let pageHtml;
-  try {
-    if (typeof page.content === 'function') {
-      pageHtml = await page.content();
+    // Get the page URL
+    let pageUrl;
+    if (typeof page.url === 'function') {
+      pageUrl = page.url();
     } else if (typeof page.evaluate === 'function') {
-      pageHtml = await page.evaluate(() => document.documentElement.outerHTML);
+      pageUrl = await page.evaluate(() => window.location.href);
+    } else {
+      throw new Error("The provided page object does not support the url function.");
     }
-  } catch (error) {
-    console.error(`Error getting page HTML: ${error.message}.  HTML will not be used for assertion.`);
-  }
 
-  // Return the answer
-  return this.answer(question, screenshotBase64, pageUrl, pageHtml);
+    // Get HTML using evaluate to avoid creating a separate trace step
+    let pageHtml;
+    try {
+      if (typeof page.evaluate === 'function') {
+        pageHtml = await page.evaluate(() => document.documentElement.outerHTML);
+      }
+    } catch (error) {
+      console.error(`Error getting page HTML: ${error.message}. HTML will not be used for assertion.`);
+    }
+
+    // Return the answer
+    return this.answer(question, screenshotBase64, pageUrl, pageHtml);
+  };
+
+  // If Playwright test object is provided, wrap in a step
+  if (testObject && typeof testObject.step === 'function') {
+    return testObject.step(stepName, executeQuery);
+  }
+  
+  return executeQuery();
 }
 
   async task(task) {
