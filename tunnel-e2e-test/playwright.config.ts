@@ -8,15 +8,15 @@ import { defineConfig } from '@playwright/test';
  * on top of this config. You do NOT need to add proxy settings here.
  *
  * The BASE_URL env var controls which URL the test hits:
- *   - For local testing:  BASE_URL=http://localhost:3000
- *   - Via tunnel:          BASE_URL=http://localhost:3000  (resolved from the tunnel client's perspective)
+ *   - For local testing:  BASE_URL=http://127.0.0.1:3001
+ *   - Via tunnel:          BASE_URL=http://127.0.0.1:3001  (resolved from the tunnel client's perspective)
  */
 export default defineConfig({
   testDir: './tests',
   timeout: 30_000,
   retries: 0,
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || 'http://127.0.0.1:3001',
     trace: 'on-first-retry',
   },
   projects: [

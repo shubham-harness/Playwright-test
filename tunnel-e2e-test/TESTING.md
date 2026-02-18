@@ -11,7 +11,7 @@ Playwright browser (K8s pod)
     → SOCKS5 proxy (tunnel-server:{port})
     → chisel reverse tunnel
     → chisel client (your machine)
-    → localhost:3000 (web app on your machine)
+    → 127.0.0.1:3001 (web app on your machine)
 ```
 
 ## Prerequisites
@@ -26,15 +26,15 @@ Playwright browser (K8s pod)
 
 ```bash
 cd tests/tunnel-e2e-test
-python app.py --port 3000
+python app.py --port 3001
 ```
 
 You should see:
 ```
-🚀 Tunnel test app listening on http://0.0.0.0:3000
+🚀 Tunnel test app listening on http://0.0.0.0:3001
 ```
 
-Verify it's working by visiting http://localhost:3000 in your browser.
+Verify it's working by visiting http://127.0.0.1:3001 in your browser.
 
 ### 2. Ensure your tunnel is connected
 
@@ -46,8 +46,8 @@ You should have a tunnel name (e.g. `my-tunnel`) visible in the Relicx UI under 
 This test project (`tests/tunnel-e2e-test/`) needs to be part of your build's git repo,
 or you can zip it and upload to S3 manually.
 
-**Important:** The `BASE_URL` defaults to `http://localhost:3000`. When the test runs
-through the tunnel, `localhost` resolves from the chisel client's perspective (your machine),
+**Important:** The `BASE_URL` defaults to `http://127.0.0.1:3001`. When the test runs
+through the tunnel, `127.0.0.1` resolves from the chisel client's perspective (your machine),
 so it will reach the web app running on your machine.
 
 ### 4. Trigger the build with tunnel
@@ -84,7 +84,7 @@ To verify the test itself works locally:
 cd tests/tunnel-e2e-test
 npm install
 npx playwright install --with-deps
-BASE_URL=http://localhost:3000 npx playwright test
+BASE_URL=http://127.0.0.1:3001 npx playwright test
 ```
 
 This runs the test directly (no tunnel) to confirm the test assertions are correct.

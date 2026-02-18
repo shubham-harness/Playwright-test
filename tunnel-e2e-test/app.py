@@ -53,12 +53,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 def main():
     parser = argparse.ArgumentParser(description="Tunnel test web app")
-    parser.add_argument("--port", type=int, default=3000, help="Port to listen on (default: 3000)")
+    parser.add_argument("--port", type=int, default=3001, help="Port to listen on (default: 3001)")
     args = parser.parse_args()
 
     server = http.server.HTTPServer(("0.0.0.0", args.port), Handler)
     print(f"🚀 Tunnel test app listening on http://0.0.0.0:{args.port}")
-    print(f"   Local URL: http://localhost:{args.port}")
+    print(f"   Local URL: http://127.0.0.1:3001:{args.port}")
     print(f"   Press Ctrl+C to stop")
     try:
         server.serve_forever()
