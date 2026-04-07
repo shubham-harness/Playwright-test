@@ -12,6 +12,7 @@ export default defineConfig({
     ["list"],
     ["json", { outputFile: "artifacts/report.json" }],
     ["html", { outputFolder: "artifacts/html", open: "never" }],
+    ["junit", { outputFile: 'artifacts/results.xml' }],
   ],
   use: {
     headless: true,
