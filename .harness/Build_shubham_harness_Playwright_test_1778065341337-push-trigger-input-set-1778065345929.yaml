@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_shubham_harness_Playwright_test_1778065341337-push-trigger-input-set
+  identifier: Build_shubham_harness_Playwright_test_1778065341337pushtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: default_project
+  pipeline:
+    identifier: Build_shubham_harness_Playwright_test_1778065341337
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: <+trigger.branch>
