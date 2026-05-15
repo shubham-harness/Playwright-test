@@ -1,6 +1,5 @@
-import { test, expect, Page, TestInfo } from '@playwright/test';
-// Import RelicxSDK for Harness AI assertions
-import RelicxSDK from './relicxSdk/src/relicxSdk';
+import { test, Page } from '@playwright/test';
+import RelicxPlaywrightSDK from 'relicx-playwright-sdk';
 
 // pre-requisites
 // npx playwright install
@@ -12,10 +11,12 @@ import RelicxSDK from './relicxSdk/src/relicxSdk';
 // export PLATFORM_USER='<your-traceable-username>'
 // export PLATFORM_PASSWORD='<your-traceable-password>'
 // npx playwright test ai-3.spec.ts
+//
+// The SDK now owns the "Harness AI Step" wrapper (step + attach + annotations
+// + Answer/Confidence substep assertions). The previous local `harnessAIStep`
+// helper has been removed — call `relicx.answerForPage(...)` directly.
 
-const RELICX_API_ENDPOINT = process.env.RELICX_API_ENDPOINT || 'https://app.relicx.ai';
-const API_KEY = process.env.RELICX_API_KEY || 'API_KEY';
-const relicx = new RelicxSDK(API_KEY, RELICX_API_ENDPOINT);
+const relicx = new RelicxPlaywrightSDK();
 
 // App-staging environment config (based on engprod-ui/appsec-ui-tests/environment.ts)
 const APP_STAGING_CONFIG = {
@@ -54,60 +55,6 @@ const Icon = {
 // Credentials
 const USERNAME = 'test+e2e@traceable.ai';
 const PASSWORD = 'L3NH5f$35rHtjBx!';
-
-/**
- * Harness AI Step - wraps the entire Relicx SDK interaction in a single accordion step
- * with substeps for answer validation and confidence check.
- * The parent step passes only if all substeps pass.
- */
-async function harnessAIStep(
-  page: Page,
-  testInfo: TestInfo,
-  question: string,
-  expectedAnswer: boolean = true,
-  minConfidence: number = 7
-) {
-  await test.step('Harness AI Step', async () => {
-    // Make the API call to Harness AI (screenshot and content fetch are internal)
-    const response = await relicx.answerForPage(question, page);
-
-    // Attach the complete response as JSON to the report
-    await testInfo.attach('harness-ai-response', {
-      body: JSON.stringify({
-        question,
-        answer: response.answer,
-        explanation: response.explanation,
-        confidence: response.confidence,
-        requestId: response.requestId,
-      }, null, 2),
-      contentType: 'application/json',
-    });
-
-    // Add key data as test annotations
-    testInfo.annotations.push(
-      { type: 'harness-ai-answer', description: String(response.answer) },
-      { type: 'harness-ai-confidence', description: String(response.confidence) },
-      { type: 'harness-ai-request-id', description: response.requestId },
-      { type: 'harness-ai-explanation', description: response.explanation }
-    );
-
-    // Substep: Validate Answer
-    await test.step(`Answer: ${response.answer} - ${response.explanation}`, async () => {
-      expect(
-        response.answer,
-        `Harness AI answer was ${response.answer}, expected ${expectedAnswer}. Explanation: ${response.explanation}`
-      ).toBe(expectedAnswer);
-    });
-
-    // Substep: Validate Confidence
-    await test.step(`Confidence: ${response.confidence}/10`, async () => {
-      expect(
-        response.confidence,
-        `Confidence ${response.confidence} is below minimum threshold ${minConfidence}`
-      ).toBeGreaterThanOrEqual(minConfidence);
-    });
-  });
-}
 
 /**
  * Navigate with retry logic (from engprod-ui/common/auth/setup/auth.utils.ts)
@@ -429,57 +376,43 @@ test.describe('Traceable App-Staging Tests with Harness AI', () => {
   // Increase timeout for these tests since login + navigation can take time
   test.setTimeout(180000); // 3 minutes
 
-  test('should verify user is logged in successfully', async ({ page }, testInfo) => {
-    // Login to Traceable
+  test('should verify user is logged in successfully', async ({ page }) => {
     await loginToTraceable(page);
 
-    // Wait for dashboard content to fully render (not just DOM ready)
     await waitForDashboardContent(page);
     await waitForLoadersToDisappear(page);
 
-    // Use Harness AI to verify login was successful
-    await harnessAIStep(
-      page,
-      testInfo,
-      'Is the user logged into the Traceable application? Look for a navigation menu, dashboard content, or user profile icon that indicates a successful login (not a login form).'
+    await relicx.answerForPage(
+      'Is the user logged into the Traceable application? Look for a navigation menu, dashboard content, or user profile icon that indicates a successful login (not a login form).',
+      page
     );
   });
 
-  test('should verify Posture Insights has API Discovery data', async ({ page }, testInfo) => {
-    // Login to Traceable
+  test('should verify Posture Insights has API Discovery data', async ({ page }) => {
     await loginToTraceable(page);
 
-    // Navigate to Posture Insights tab
     await navigateToSection(page, 'Posture Insights');
-    
-    // Wait for widgets to render
+
     await waitForLoadersToDisappear(page);
     await page.waitForTimeout(2000);
 
-    // Use Harness AI to check for API Discovery widget with data
-    await harnessAIStep(
-      page,
-      testInfo,
-      'Is there an "API Discovery" widget or metric on this page showing a number greater than zero? Look for a card or widget labeled "API Discovery" with a numeric count.'
+    await relicx.answerForPage(
+      'Is there an "API Discovery" widget or metric on this page showing a number greater than zero? Look for a card or widget labeled "API Discovery" with a numeric count.',
+      page
     );
   });
 
-  test('should verify Protection dashboard has threat activity widget', async ({ page }, testInfo) => {
-    // Login to Traceable
+  test('should verify Protection dashboard has threat activity widget', async ({ page }) => {
     await loginToTraceable(page);
 
-    // Navigate to Protection module in left nav
     await navigateToSection(page, 'Protection');
-    
-    // Wait for Protection dashboard content to render
-    await waitForLoadersToDisappear(page);
-    await page.waitForTimeout(3000); // Extra wait for Protection dashboard widgets
 
-    // Use Harness AI to check for threat-related widgets
-    await harnessAIStep(
-      page,
-      testInfo,
-      'Is there a dashboard widget showing threat activity, traffic metrics, or security events? Look for charts, graphs, or metrics related to threats, blocked traffic, or protection status.'
+    await waitForLoadersToDisappear(page);
+    await page.waitForTimeout(3000);
+
+    await relicx.answerForPage(
+      'Is there a dashboard widget showing threat activity, traffic metrics, or security events? Look for charts, graphs, or metrics related to threats, blocked traffic, or protection status.',
+      page
     );
   });
 });
