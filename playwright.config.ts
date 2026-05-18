@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: ".",
   testMatch: ["*.spec.ts"],
   /* You can run: npx playwright test */
-  timeout: 30 * 1000,
+  timeout: 5 * 60 * 1000,
   expect: { timeout: 10 * 1000 },
   workers: 1,
   // Emit machine-readable run results

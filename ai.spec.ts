@@ -18,6 +18,10 @@ const relicx = new RelicxPlaywrightSDK();
 const URL = 'http://prod.dbank.staging-apps.relicx.ai:8080/bank/login';
 
 test.describe('User Authentication', () => {
+  // /assert can take 30-90s (2 LLM calls server-side). Give it room before
+  // we even ask whether the gateway is the bottleneck.
+  test.setTimeout(180_000);
+
   test('should successfully log in with valid credentials', async ({ page }) => {
     await page.goto(URL);
     await page.fill('#username', 'jsmith@demo.io');

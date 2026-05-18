@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "axios": "^1.12.2",
-    "relicx-playwright-sdk": "^2.0.1"
+    "relicx-playwright-sdk": "^2.0.3"
   }
 }
