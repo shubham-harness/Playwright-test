@@ -1,22 +1,22 @@
 import { test, Page } from '@playwright/test';
-import RelicxPlaywrightSDK from 'relicx-playwright-sdk';
+import { HarnessAITestSDK } from '@harness/ai-test-sdk';
 
 // pre-requisites
 // npx playwright install
 // npm i -D @playwright/test
 // npx playwright install-deps chromium
 // Required environment variables:
-// export RELICX_API_KEY='<your-api-key>'
-// export RELICX_API_ENDPOINT='https://ci-ingress-ben-1.relicx.ai'
+// export HARNESS_AI_API_KEY='<your-api-key>'
+// export HARNESS_AI_API_ENDPOINT='https://ci-ingress-ben-1.relicx.ai'
 // export PLATFORM_USER='<your-traceable-username>'
 // export PLATFORM_PASSWORD='<your-traceable-password>'
 // npx playwright test ai-3.spec.ts
 //
-// The SDK now owns the "Harness AI Step" wrapper (step + attach + annotations
-// + Answer/Confidence substep assertions). The previous local `harnessAIStep`
-// helper has been removed — call `relicx.answerForPage(...)` directly.
+// The SDK owns the "Harness AI Step" wrapper (step + attach + annotations
+// + Answer/Confidence substep assertions). Call `ai.answerForPage(...)`
+// directly — no local helper needed.
 
-const relicx = new RelicxPlaywrightSDK();
+const ai = new HarnessAITestSDK();
 
 // App-staging environment config (based on engprod-ui/appsec-ui-tests/environment.ts)
 const APP_STAGING_CONFIG = {
@@ -382,7 +382,7 @@ test.describe('Traceable App-Staging Tests with Harness AI', () => {
     await waitForDashboardContent(page);
     await waitForLoadersToDisappear(page);
 
-    await relicx.answerForPage(
+    await ai.answerForPage(
       'Is the user logged into the Traceable application? Look for a navigation menu, dashboard content, or user profile icon that indicates a successful login (not a login form).',
       page
     );
@@ -396,7 +396,7 @@ test.describe('Traceable App-Staging Tests with Harness AI', () => {
     await waitForLoadersToDisappear(page);
     await page.waitForTimeout(2000);
 
-    await relicx.answerForPage(
+    await ai.answerForPage(
       'Is there an "API Discovery" widget or metric on this page showing a number greater than zero? Look for a card or widget labeled "API Discovery" with a numeric count.',
       page
     );
@@ -410,7 +410,7 @@ test.describe('Traceable App-Staging Tests with Harness AI', () => {
     await waitForLoadersToDisappear(page);
     await page.waitForTimeout(3000);
 
-    await relicx.answerForPage(
+    await ai.answerForPage(
       'Is there a dashboard widget showing threat activity, traffic metrics, or security events? Look for charts, graphs, or metrics related to threats, blocked traffic, or protection status.',
       page
     );
