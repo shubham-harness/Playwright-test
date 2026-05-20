@@ -1,19 +1,19 @@
 import { test } from '@playwright/test';
-import RelicxPlaywrightSDK from 'relicx-playwright-sdk';
+import { HarnessAITestSDK } from '@harness/ai-test-sdk';
 
 // pre-requisites
 // npx playwright install
 // npm i -D @playwright/test
 // npx playwright install-deps chromium
-// export RELICX_API_KEY='<your-api-key>'
-// export RELICX_API_ENDPOINT='https://ci-ingress-ben-1.relicx.ai'
+// export HARNESS_AI_API_KEY='<your-api-key>'
+// export HARNESS_AI_API_ENDPOINT='https://ci-ingress-ben-1.relicx.ai'
 // npx playwright test ai-2.spec.ts
 //
-// The SDK now owns the "Harness AI Step" wrapper (step + attach + annotations
-// + Answer/Confidence substep assertions). The previous local `harnessAIStep`
-// helper has been removed — call `relicx.answerForPage(...)` directly.
+// The SDK owns the "Harness AI Step" wrapper (step + attach + annotations
+// + Answer/Confidence substep assertions). Call `ai.answerForPage(...)`
+// directly — no local helper needed.
 
-const relicx = new RelicxPlaywrightSDK();
+const ai = new HarnessAITestSDK();
 
 const URL = 'https://demo.playwright.dev/todomvc';
 
@@ -25,7 +25,7 @@ test.describe('TodoMVC App', () => {
     await page.fill('.new-todo', todoText);
     await page.press('.new-todo', 'Enter');
 
-    await relicx.answerForPage(
+    await ai.answerForPage(
       `Is there a todo item with the text "${todoText}" visible on the page?`,
       page
     );
@@ -39,7 +39,7 @@ test.describe('TodoMVC App', () => {
 
     await page.click('.todo-list li .toggle');
 
-    await relicx.answerForPage(
+    await ai.answerForPage(
       'Is there a completed (crossed out or checked) todo item on the page?',
       page
     );
