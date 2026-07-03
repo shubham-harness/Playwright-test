@@ -1,0 +1,1 @@
+PR4 test fixture: nested obj/ intermediate (nested/obj). This MUST be EXCLUDED from the repo bundle.
