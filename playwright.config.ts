@@ -3,6 +3,8 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: ".",
   testMatch: ["*.spec.ts"],
+  // tunnel-e2e-test is a separate sub-project with its own config
+  testIgnore: ["**/tunnel-e2e-test/**"],
   /* You can run: npx playwright test */
   timeout: 5 * 60 * 1000,
   expect: { timeout: 10 * 1000 },
